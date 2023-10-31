@@ -84,6 +84,8 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Font Include="res\dev\MontserratBold.ttf" />
+    <Font Include="res\dev\MontserratBold.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\SDL2-VC\include;include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SDL2-VC\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\SDL2-devel-2.28.2-VC\include;include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\SDL2-devel-2.28.2-VC\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\SDL2-VC\include;include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\SDL2-VC\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)\SDL2-devel-2.28.2-VC\include;include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)\SDL2-devel-2.28.2-VC\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

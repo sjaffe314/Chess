@@ -179,8 +179,8 @@ void Pieces::changeTurn(int32_t p_brdPos)
 {
     board.updatePreviousHighlights(selected->brdPos, p_brdPos);
     board.clearLegalMoves();
-    board.toggleView();
-    updateAllPiecePos();
+    //board.toggleView();
+    //updateAllPiecePos();
 
     // updates board data & deals with special cases (promotions/castles/enPassants)
     bool storeEnPassant = false;

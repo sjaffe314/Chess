@@ -25,6 +25,10 @@ RenderWindow::RenderWindow(const char *p_title)
         std::cout << "Renderer failed to init. Error: " << SDL_GetError() << std::endl;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
+    font = TTF_OpenFont("res/dev/MontserratBold.ttf", 30);
+    if (font == NULL)
+        std::cout << "Font failed to init. Error: " << TTF_GetError() << std::endl;
+
     initTextures();
 }
 
@@ -35,13 +39,28 @@ RenderWindow::~RenderWindow()
     SDL_DestroyRenderer(renderer);
 }
 
-SDL_Texture *RenderWindow::loadTexture(const char *p_filePath)
+SDL_Texture* RenderWindow::loadTexture(const char *p_filePath)
 {
     SDL_Texture *texture = NULL;
     texture = IMG_LoadTexture(renderer, p_filePath);
 
     if (texture == NULL)
         std::cout << "Failed to load texture. Error: " << SDL_GetError() << std::endl;
+
+    return texture;
+}
+
+SDL_Texture* RenderWindow::loadFont(std::string text, SDL_Color color)
+{
+    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), color);
+    if (textSurface == NULL)
+        printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if (texture == NULL)
+        printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+
+    SDL_FreeSurface(textSurface);
 
     return texture;
 }

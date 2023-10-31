@@ -165,6 +165,9 @@
   <ItemGroup>
     <Image Include="res\gfx\SpriteSheet.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="res\dev\MontserratBold.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

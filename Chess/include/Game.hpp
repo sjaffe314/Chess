@@ -8,6 +8,7 @@
 #include "RenderWindow.hpp"
 #include "Pieces.hpp"
 #include "Board.hpp"
+#include "GUI.hpp"
 #include "Entity.hpp"
 #include "Math.hpp"
 #include "Utils.hpp"
@@ -17,7 +18,6 @@ class Game
 {
 public:
     Game();
-    ~Game();
     void run();
 
 private:
@@ -32,6 +32,7 @@ private:
 
     Board board;
     Pieces pieces;
+    //GUI gui;
     int32_t hovered = -1;
     Vector2i mousePos = {0, 0};
 };

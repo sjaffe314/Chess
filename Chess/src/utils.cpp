@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <iostream>
 #include <cmath>
 
@@ -18,6 +19,12 @@ bool utils::initSDL()
     if (!IMG_Init(IMG_INIT_PNG))
     {
         std::cout << "IMG_Init failed. Error: " << SDL_GetError() << std::endl;
+        return false;
+    }
+
+    if (TTF_Init() == -1)
+    {
+        printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
         return false;
     }
 

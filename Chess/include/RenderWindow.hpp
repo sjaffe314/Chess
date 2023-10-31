@@ -1,8 +1,10 @@
 #pragma once
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include <iostream>
+#include <string>
 #include <optional>
 #include <unordered_set>
 #include <vector>
@@ -19,6 +21,7 @@ public:
     RenderWindow(const char *p_title);
     ~RenderWindow();
     SDL_Texture *loadTexture(const char *p_filePath);
+    SDL_Texture *loadFont(std::string text, SDL_Color color);
     SDL_Texture *createBoardTexture();
 
     // drawing
@@ -40,6 +43,7 @@ public:
 private:
     SDL_Window *window = nullptr;
     SDL_Renderer *renderer = nullptr;
+    TTF_Font *font = nullptr;
     SDL_DisplayMode displayInfo;
 
     uint32_t backgroundColor = 0x112233ff;

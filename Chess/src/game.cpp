@@ -12,15 +12,10 @@
 #include "Game.hpp"
 
 Game::Game()
-    : window("Game"), board(window), pieces(window, board)
+    : window("Game"), board(window), pieces(window, board) // , gui(window)
 {
     // "kQR5/8/8/8/8/8/8/8 b - - 0 10"
     // "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-}
-
-Game::~Game()
-{
-    SDL_Quit();
 }
 
 void Game::run()
@@ -78,5 +73,6 @@ void Game::draw()
     window.clear();
     board.draw();
     pieces.draw();
+    //gui.draw();
     window.display();
 }

@@ -65,4 +65,6 @@ private:
 
     const int32_t directions[8] = {-8, 8, -1, 1, -9, 9, 7, -7}; // i % 2 == 1 is movements to right
     const int32_t kightMoves[8] = {6, -10, 15, -17, 17, -15, 10, -6};
+
+    bool flipBoard = false; // determines if the board is flipped after every turn
 };

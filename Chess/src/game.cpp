@@ -61,7 +61,7 @@ void Game::checkEvents()
             case SDLK_ESCAPE:
                 gameRunning = false;
                 break;
-            case SDLK_n:
+            case SDLK_n: // pressing "n" resets the board
                 pieces.setBoard();
                 break;
             }

@@ -12,7 +12,7 @@
 #include "Game.hpp"
 
 Game::Game()
-    : window("Game"), board(window), pieces(window, board) // , gui(window)
+    : window("Game"), board(window), pieces(window, board), gui(window)
 {
     // "kQR5/8/8/8/8/8/8/8 b - - 0 10"
     // "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
@@ -20,7 +20,7 @@ Game::Game()
 
 void Game::run()
 {
-    while (gameRunning && !pieces.checkMate) // temporarily just ends program once checkmate
+    while (gameRunning) // temporarily just ends program once checkmate
     {
         int startTicks = SDL_GetTicks();
 
@@ -30,6 +30,8 @@ void Game::run()
         pieces.updateSelectedPiecePos(mousePos);
 
         checkEvents();
+
+        gui.setCheckMateStatus(pieces.checkMate);
 
         if (change)
             draw();
@@ -59,6 +61,9 @@ void Game::checkEvents()
             case SDLK_ESCAPE:
                 gameRunning = false;
                 break;
+            case SDLK_n:
+                pieces.setBoard();
+                break;
             }
             break;
         case SDL_QUIT:
@@ -73,6 +78,6 @@ void Game::draw()
     window.clear();
     board.draw();
     pieces.draw();
-    //gui.draw();
+    gui.draw();
     window.display();
 }

@@ -15,9 +15,12 @@ public:
     Entity(){};
     ~Entity() { SDL_DestroyTexture(tex); }
     void updateVals(Vector2i p_pos, SDL_Texture *p_tex);
+    void updatePos(Vector2i p_pos);
     void updateTex(SDL_Texture *p_tex);
 
     Vector2i &getPos() { return pos; }
     SDL_Texture *getTex() { return tex; }
     SDL_Rect getCurrentFrame() { return currentFrame; }
+    int getHeight() { return currentFrame.h; }
+    int getWidth() { return currentFrame.w; }
 };

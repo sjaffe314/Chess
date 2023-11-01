@@ -25,7 +25,7 @@ RenderWindow::RenderWindow(const char *p_title)
         std::cout << "Renderer failed to init. Error: " << SDL_GetError() << std::endl;
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-    font = TTF_OpenFont("res/dev/MontserratBold.ttf", 30);
+    font = TTF_OpenFont("res/dev/MontserratBold.ttf", 60);
     if (font == NULL)
         std::cout << "Font failed to init. Error: " << TTF_GetError() << std::endl;
 

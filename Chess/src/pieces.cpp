@@ -11,12 +11,16 @@ Pieces::Pieces(RenderWindow &p_window, Board &p_board)
     : window(p_window), board(p_board)
 {
     setBoard();
-
-    calculateAllLegalMoves(state.activeMove);
 }
 
 void Pieces::setBoard(std::string p_fen)
 {
+    storedPieces.clear();
+    selected.reset();
+    checkMate = false;
+    held = false;
+    unselectIfDropped = false;
+    
     int32_t brdPos = 0;
 
     int i = 0;
@@ -63,6 +67,8 @@ void Pieces::setBoard(std::string p_fen)
     {
         state.fullMoves = state.fullMoves * 10 + p_fen[i] - '0';
     }
+
+    calculateAllLegalMoves(state.activeMove);
 }
 
 void Pieces::onClick(int32_t p_brdPos)
@@ -211,7 +217,7 @@ void Pieces::changeTurn(int32_t p_brdPos)
         break;
     case Pawn:
         if (p_brdPos / 8 == 7 || p_brdPos / 8 == 0)
-            selected->piece.type = (int(state.activeMove) << 3) | Queen; // modify here if want to give option for which piece
+            storedPieces[selected->brdPos].type = (int(state.activeMove) << 3) | Queen; // modify here if want to give option for which piece
         else if (p_brdPos == state.enPassant)
             Pieces::removePiece(p_brdPos + (int)state.activeMove * 16 - 8);
         storeEnPassant = abs(selected->brdPos - p_brdPos) == 16; // if it moved 2 rows
@@ -353,15 +359,22 @@ void Pieces::calculateAllLegalMoves(bool p_color)
             {
             case Pawn:
             {
-                int32_t dir = 2 * int32_t(!p_color) - 1;
-                for (direction = dir * 7; direction != dir * 11; direction += 2 * dir)
+                direction = (2 * int32_t(!p_color) - 1) * 8;
+                // attack diagonals
+                if (brdPos % 8 != 0) 
                 {
-                    option = brdPos + direction;
+                    option = brdPos + direction - 1;
+                    if (((storedPieces.contains(option) && bool(storedPieces[option].type >> 3) == !p_color) || option == state.enPassant) && !doesMoveResultInCheck(brdPos, option, p_color))
+                        legalMoves.insert(option);
+                }
+                if (brdPos % 8 != 7)
+                {
+                    option = brdPos + direction + 1;
                     if (((storedPieces.contains(option) && bool(storedPieces[option].type >> 3) == !p_color) || option == state.enPassant) && !doesMoveResultInCheck(brdPos, option, p_color))
                         legalMoves.insert(option);
                 }
 
-                direction = dir * 8;
+                // vertical movement
                 option = brdPos + direction;
                 if (!storedPieces.contains(option))
                 {
@@ -393,14 +406,14 @@ void Pieces::calculateAllLegalMoves(bool p_color)
                 {
                     for (option = brdPos + direction; option < 64 && option >= 0 && !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7)); option += direction)
                     {
-                        if (doesMoveResultInCheck(brdPos, option, p_color))
-                            continue;
                         if (storedPieces.contains(option))
                         {
-                            if (bool(storedPieces[option].type >> 3) != p_color)
+                            if (bool(storedPieces[option].type >> 3) != p_color && !doesMoveResultInCheck(brdPos, option, p_color))
                                 legalMoves.insert(option);
                             break;
                         }
+                        if (doesMoveResultInCheck(brdPos, option, p_color))
+                            continue;
                         legalMoves.insert(option);
                     }
                 }
@@ -413,14 +426,14 @@ void Pieces::calculateAllLegalMoves(bool p_color)
                 {
                     for (option = brdPos + direction; option < 64 && option >= 0 && (i < 2 || !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7))); option += direction)
                     {
-                        if (doesMoveResultInCheck(brdPos, option, p_color))
-                            continue;
                         if (storedPieces.contains(option))
                         {
-                            if (bool(storedPieces[option].type >> 3) != p_color)
+                            if (bool(storedPieces[option].type >> 3) != p_color && !doesMoveResultInCheck(brdPos, option, p_color))
                                 legalMoves.insert(option);
                             break;
                         }
+                        if (doesMoveResultInCheck(brdPos, option, p_color))
+                            continue;
                         legalMoves.insert(option);
                     }
                 }
@@ -433,14 +446,14 @@ void Pieces::calculateAllLegalMoves(bool p_color)
                 {
                     for (option = brdPos + direction; option < 64 && option >= 0 && (i < 2 || !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7))); option += direction)
                     {
-                        if (doesMoveResultInCheck(brdPos, option, p_color))
-                            continue;
                         if (storedPieces.contains(option))
                         {
-                            if (bool(storedPieces[option].type >> 3) != p_color)
+                            if (bool(storedPieces[option].type >> 3) != p_color && !doesMoveResultInCheck(brdPos, option, p_color))
                                 legalMoves.insert(option);
                             break;
                         }
+                        if (doesMoveResultInCheck(brdPos, option, p_color))
+                            continue;
                         legalMoves.insert(option);
                     }
                 }

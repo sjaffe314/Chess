@@ -15,7 +15,9 @@ void Board::draw()
 {
     window.render(board);
 
-    for (int i = 0; i < 3; i++)
+    if (highlightPositions[0] >= 0)
+        window.renderSquareHighlight(selectedColor, boardToPos(highlightPositions[0]));
+    for (int i = 1; i < 3; i++)
     {
         if (highlightPositions[i] < 0)
             continue;

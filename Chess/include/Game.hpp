@@ -32,7 +32,7 @@ private:
 
     Board board;
     Pieces pieces;
-    //GUI gui;
+    GUI gui;
     int32_t hovered = -1;
     Vector2i mousePos = {0, 0};
 };

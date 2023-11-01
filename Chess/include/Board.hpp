@@ -35,8 +35,9 @@ private:
 
     int32_t clampedHover = 0;
 
-    uint32_t highlightColor = 0x23fa8780;
-    uint32_t legalMoveColor = 0xd9352980;
+    uint32_t legalMoveColor = 0x23fa8780;
+    uint32_t selectedColor = 0xe6db1280;
+    uint32_t highlightColor = 0x5c96f280;
     int squareSize = 0;
 
     Entity board;

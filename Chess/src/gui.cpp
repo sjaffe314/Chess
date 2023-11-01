@@ -2,10 +2,11 @@
 
 GUI::GUI(RenderWindow& p_window) : window(p_window) 
 {
-	text.updateVals({10, 10}, window.loadFont("New Game", gray));
+	text.updateTex(window.loadFont("Checkmate", green));
+	text.updatePos({ (window.getWidth() - text.getWidth()) / 2, 30 });
 }
 
 void GUI::draw()
 {
-	window.render(text);
+	if (checkMate)	window.render(text);
 }

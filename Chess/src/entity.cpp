@@ -12,15 +12,20 @@ Entity::Entity(Vector2i p_pos, SDL_Texture *p_tex)
 
 void Entity::updateVals(Vector2i p_pos, SDL_Texture *p_tex)
 {
+    updatePos(p_pos);
+    updateTex(p_tex);
+}
+
+void Entity::updatePos(Vector2i p_pos)
+{
     pos = p_pos;
-    tex = p_tex;
-    currentFrame.x = 0;
-    currentFrame.y = 0;
-    SDL_QueryTexture(tex, NULL, NULL, &currentFrame.w, &currentFrame.h);
 }
 
 void Entity::updateTex(SDL_Texture *p_tex)
 {
+    SDL_DestroyTexture(tex);
     tex = p_tex;
+    currentFrame.x = 0;
+    currentFrame.y = 0;
     SDL_QueryTexture(tex, NULL, NULL, &currentFrame.w, &currentFrame.h);
 }

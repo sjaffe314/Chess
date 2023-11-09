@@ -27,7 +27,7 @@ struct GameState
 class Pieces
 {
 public:
-    Pieces(RenderWindow &p_window, Board &p_board);
+    Pieces(Board &p_board);
     void setBoard(std::string p_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     void onClick(int32_t p_brdpos);
     void onRelease(int32_t p_brdpos);
@@ -41,9 +41,11 @@ public:
 private:
     bool selectPieceAtSquare(int32_t p_brdPos);
     bool placeSelectedPiece(int32_t p_brdPos);
+    void makeMove(int32_t p_brdPos);
+
+    bool pieceAt(int32_t p_brdPos);
     void movePiece(int32_t from, int32_t end);
     void removePiece(int32_t p_brdPos);
-    void changeTurn(int32_t p_brdPos);
 
     // calculations
     void calculateAllLegalMoves(bool p_color);

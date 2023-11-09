@@ -10,7 +10,7 @@
 class GUI
 {
 public:
-	GUI(RenderWindow& p_window);
+	GUI();
 	void draw();
 	void setCheckMateStatus(bool p_checkMate) { checkMate = p_checkMate; }
 private:

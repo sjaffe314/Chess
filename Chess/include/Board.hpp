@@ -9,7 +9,7 @@
 class Board
 {
 public:
-    Board(RenderWindow& p_window);
+    Board();
     void updateBoardTexture();
 
     void draw();

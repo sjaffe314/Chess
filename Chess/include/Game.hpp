@@ -25,7 +25,7 @@ private:
     void draw();
 
     // Settings settings;
-    RenderWindow window;
+    RenderWindow& window;
     bool gameRunning = true;
     bool change = true;
     SDL_Event event;

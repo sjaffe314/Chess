@@ -16,6 +16,12 @@
 class RenderWindow
 {
 public:
+    static RenderWindow& get()
+    {
+        static RenderWindow INSTANCE("Chess");
+        return INSTANCE;
+    }
+    
     // initializations
     RenderWindow(const char *p_title, int p_w, int p_h);
     RenderWindow(const char *p_title);

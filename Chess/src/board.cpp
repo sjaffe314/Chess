@@ -1,6 +1,8 @@
 #include "Board.hpp"
 
-Board::Board(RenderWindow& p_window) : window(p_window) { updateBoardTexture(); }
+Board::Board() : window(RenderWindow::get()) {
+    updateBoardTexture();
+}
 
 void Board::updateBoardTexture()
 {

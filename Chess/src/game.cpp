@@ -12,7 +12,7 @@
 #include "Game.hpp"
 
 Game::Game()
-    : window("Game"), board(window), pieces(window, board), gui(window)
+    : window(RenderWindow::get()), board(), pieces(board), gui()
 {
     // "kQR5/8/8/8/8/8/8/8 b - - 0 10"
     // "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"

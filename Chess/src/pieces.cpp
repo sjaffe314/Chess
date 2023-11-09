@@ -7,8 +7,8 @@
 #include <initializer_list>
 #include <cmath>
 
-Pieces::Pieces(RenderWindow &p_window, Board &p_board)
-    : window(p_window), board(p_board)
+Pieces::Pieces(Board &p_board)
+    : window(RenderWindow::get()), board(p_board)
 {
     setBoard();
 }
@@ -135,7 +135,7 @@ void Pieces::updateAllPiecePos()
 bool Pieces::selectPieceAtSquare(int32_t p_brdPos)
 {
     /*Selects piece at square. Returns whether it was sucessful*/
-    if (!storedPieces.contains(p_brdPos))
+    if (!pieceAt(p_brdPos))
         return false;
 
     selected = {p_brdPos, storedPieces.at(p_brdPos)};
@@ -152,7 +152,7 @@ bool Pieces::placeSelectedPiece(int32_t p_brdPos)
     held = false;
     if (storedLegalMoves[selected->brdPos].contains(p_brdPos)) // if move is legal
     {
-        changeTurn(p_brdPos);
+        makeMove(p_brdPos);
         return true;
     }
 
@@ -169,19 +169,7 @@ bool Pieces::placeSelectedPiece(int32_t p_brdPos)
     return false;
 }
 
-void Pieces::movePiece(int32_t from, int32_t end)
-{
-    storedPieces[end] = storedPieces[from];
-    storedPieces[end].pos = board.boardToPos(end);
-    storedPieces.erase(from);
-}
-
-void Pieces::removePiece(int32_t p_brdPos)
-{
-    storedPieces.erase(p_brdPos);
-}
-
-void Pieces::changeTurn(int32_t p_brdPos)
+void Pieces::makeMove(int32_t p_brdPos)
 {
     board.updatePreviousHighlights(selected->brdPos, p_brdPos);
     board.clearLegalMoves();
@@ -237,6 +225,23 @@ void Pieces::changeTurn(int32_t p_brdPos)
     calculateAllLegalMoves(state.activeMove);
 }
 
+bool Pieces::pieceAt(int32_t p_brdPos)
+{
+    return storedPieces.contains(p_brdPos);
+}
+
+void Pieces::movePiece(int32_t from, int32_t end)
+{
+    storedPieces[end] = storedPieces[from];
+    storedPieces[end].pos = board.boardToPos(end);
+    storedPieces.erase(from);
+}
+
+void Pieces::removePiece(int32_t p_brdPos)
+{
+    storedPieces.erase(p_brdPos);
+}
+
 void Pieces::calculateAllLegalMoves(bool p_color)
 {
     storedLegalMoves.clear();
@@ -261,7 +266,7 @@ void Pieces::calculateAllLegalMoves(bool p_color)
         if (!(option < 64 && option >= 0 && (i < 2 || !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7)))))
             continue;
 
-        if (storedPieces.contains(option)) // needs to have contrait of 0-63 if changed to array
+        if (pieceAt(option)) // needs to have contrait of 0-63 if changed to array
         {
             if (bool(storedPieces[option].type >> 3) != p_color)
             {
@@ -288,7 +293,7 @@ void Pieces::calculateAllLegalMoves(bool p_color)
 
         for (option += direction; option < 64 && option >= 0 && (i < 2 || !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7))); option += direction)
         {
-            if (storedPieces.contains(option))
+            if (pieceAt(option))
             {
                 if (bool(storedPieces[option].type >> 3) != p_color)
                 {
@@ -312,7 +317,7 @@ void Pieces::calculateAllLegalMoves(bool p_color)
     // check horse positions for threats
     for (option = kingPos + kightMoves[i = 0]; i < 8; option = kingPos + kightMoves[++i])
     {
-        if (storedPieces.contains(option) && storedPieces[option].type == (enemyColor | Knight))
+        if (pieceAt(option) && storedPieces[option].type == (enemyColor | Knight))
         {
             if (inCheck)
                 doubleCheck = true;
@@ -336,8 +341,8 @@ void Pieces::calculateAllLegalMoves(bool p_color)
         {
             if (state.castleOpportunities & (0b1 << ((int)p_color << 1) << (i - 2))                                   // First checks the 0b01 (queen side) then checks the 0b10 (king side)
                 && legalMoves.contains(kingPos + direction)                                                           // move is already checked for being empty and not threatened
-                && !storedPieces.contains(kingPos + 2 * direction) && !isThreatened(kingPos + 2 * direction, p_color) // checks if final kingPos is blocked or threated
-                && (direction == 1 || !storedPieces.contains(kingPos - 3)))                                           // checks final square if it is queen side
+                && !pieceAt(kingPos + 2 * direction) && !isThreatened(kingPos + 2 * direction, p_color) // checks if final kingPos is blocked or threated
+                && (direction == 1 || !pieceAt(kingPos - 3)))                                           // checks final square if it is queen side
             {
                 legalMoves.insert(kingPos + 2 * direction);
             }
@@ -353,7 +358,7 @@ void Pieces::calculateAllLegalMoves(bool p_color)
         {
             //  || pinnedPieces.contains(brdPos)
             // can't use because can move in line with the pin... maybe way to solve that
-            if (!storedPieces.contains(brdPos) || bool(storedPieces[brdPos].type >> 3) != p_color)
+            if (!pieceAt(brdPos) || bool(storedPieces[brdPos].type >> 3) != p_color)
                 continue;
 
             legalMoves.clear();
@@ -367,24 +372,24 @@ void Pieces::calculateAllLegalMoves(bool p_color)
                 if (brdPos % 8 != 0) 
                 {
                     option = brdPos + direction - 1;
-                    if (((storedPieces.contains(option) && bool(storedPieces[option].type >> 3) == !p_color) || option == state.enPassant) && !doesMoveResultInCheck(brdPos, option, p_color))
+                    if (((pieceAt(option) && bool(storedPieces[option].type >> 3) == !p_color) || option == state.enPassant) && !doesMoveResultInCheck(brdPos, option, p_color))
                         legalMoves.insert(option);
                 }
                 if (brdPos % 8 != 7)
                 {
                     option = brdPos + direction + 1;
-                    if (((storedPieces.contains(option) && bool(storedPieces[option].type >> 3) == !p_color) || option == state.enPassant) && !doesMoveResultInCheck(brdPos, option, p_color))
+                    if (((pieceAt(option) && bool(storedPieces[option].type >> 3) == !p_color) || option == state.enPassant) && !doesMoveResultInCheck(brdPos, option, p_color))
                         legalMoves.insert(option);
                 }
 
                 // vertical movement
                 option = brdPos + direction;
-                if (!storedPieces.contains(option))
+                if (!pieceAt(option))
                 {
                     if (!doesMoveResultInCheck(brdPos, option, p_color))
                         legalMoves.insert(option);
                     option += direction;
-                    if (brdPos / 8 == 1 + 5 * int(p_color) && !storedPieces.contains(option) && !doesMoveResultInCheck(brdPos, option, p_color))
+                    if (brdPos / 8 == 1 + 5 * int(p_color) && !pieceAt(option) && !doesMoveResultInCheck(brdPos, option, p_color))
                         legalMoves.insert(option);
                 }
                 break;
@@ -397,7 +402,7 @@ void Pieces::calculateAllLegalMoves(bool p_color)
 
                 for (option = brdPos + kightMoves[i]; i < end; option = brdPos + kightMoves[++i])
                 {
-                    if (option < 64 && option >= 0 && (!storedPieces.contains(option) || bool(storedPieces[option].type >> 3) == !p_color) && !doesMoveResultInCheck(brdPos, option, p_color))
+                    if (option < 64 && option >= 0 && (!pieceAt(option) || bool(storedPieces[option].type >> 3) == !p_color) && !doesMoveResultInCheck(brdPos, option, p_color))
                         legalMoves.insert(option);
                 }
                 break;
@@ -409,7 +414,7 @@ void Pieces::calculateAllLegalMoves(bool p_color)
                 {
                     for (option = brdPos + direction; option < 64 && option >= 0 && !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7)); option += direction)
                     {
-                        if (storedPieces.contains(option))
+                        if (pieceAt(option))
                         {
                             if (bool(storedPieces[option].type >> 3) != p_color && !doesMoveResultInCheck(brdPos, option, p_color))
                                 legalMoves.insert(option);
@@ -429,7 +434,7 @@ void Pieces::calculateAllLegalMoves(bool p_color)
                 {
                     for (option = brdPos + direction; option < 64 && option >= 0 && (i < 2 || !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7))); option += direction)
                     {
-                        if (storedPieces.contains(option))
+                        if (pieceAt(option))
                         {
                             if (bool(storedPieces[option].type >> 3) != p_color && !doesMoveResultInCheck(brdPos, option, p_color))
                                 legalMoves.insert(option);
@@ -449,7 +454,7 @@ void Pieces::calculateAllLegalMoves(bool p_color)
                 {
                     for (option = brdPos + direction; option < 64 && option >= 0 && (i < 2 || !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7))); option += direction)
                     {
-                        if (storedPieces.contains(option))
+                        if (pieceAt(option))
                         {
                             if (bool(storedPieces[option].type >> 3) != p_color && !doesMoveResultInCheck(brdPos, option, p_color))
                                 legalMoves.insert(option);
@@ -483,7 +488,6 @@ bool Pieces::isThreatened(int32_t p_brdPos, bool p_color)
     if (p_brdPos >= 64)
         return false;
 
-    // bool color = bool(storedPieces[p_brdPos].type >> 3);
     uint32_t enemyColor = int(!p_color) << 3;
 
     int32_t option;
@@ -495,7 +499,7 @@ bool Pieces::isThreatened(int32_t p_brdPos, bool p_color)
         option = p_brdPos + direction;
         if (!(option < 64 && option >= 0 && (i < 2 || !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7)))))
             continue;
-        if (storedPieces.contains(option)) // needs to have contrait of 0-63 if changed to array
+        if (pieceAt(option))
         {
             if (bool(storedPieces[option].type >> 3) != p_color)
             {
@@ -505,11 +509,11 @@ bool Pieces::isThreatened(int32_t p_brdPos, bool p_color)
             }
             continue;
         }
-        // previous section necessary for king because the king and pawn can only move one place
+        // previous section necessary for the king and pawn can only move one place
 
         for (option += direction; option < 64 && option >= 0 && (i < 2 || !((i % 2 == 1 && option % 8 == 0) || (i % 2 == 0 && option % 8 == 7))); option += direction)
         {
-            if (storedPieces.contains(option))
+            if (pieceAt(option))
             {
                 if (bool(storedPieces[option].type >> 3) != p_color)
                 {
@@ -524,7 +528,7 @@ bool Pieces::isThreatened(int32_t p_brdPos, bool p_color)
 
     for (option = p_brdPos + kightMoves[i = 0]; i < 8; option = p_brdPos + kightMoves[++i])
     {
-        if (storedPieces.contains(option) && storedPieces[option].type == (enemyColor | Knight))
+        if (pieceAt(option) && storedPieces[option].type == (enemyColor | Knight))
             return true;
     }
 
@@ -537,7 +541,7 @@ bool Pieces::doesMoveResultInCheck(int32_t p_brdPosFrom, int32_t p_brdPosTo, boo
     bool isKing = (storedPieces[p_brdPosFrom].type & 0b111) == King;
 
     Piece backUp;
-    bool isCapture = storedPieces.contains(p_brdPosTo);
+    bool isCapture = pieceAt(p_brdPosTo);
     if (isCapture)
         backUp = storedPieces[p_brdPosTo];
 
@@ -567,7 +571,7 @@ bool Pieces::tryMove(int32_t p_brdPos)
         return false;
 
     bool isCapture = false;
-    if (storedPieces.contains(p_brdPos))
+    if (pieceAt(p_brdPos))
     {
         if (bool(storedPieces[p_brdPos].type >> 3) != color)
             isCapture = true;
@@ -594,7 +598,7 @@ bool Pieces::tryMove(int32_t p_brdPos)
             {
                 if (diff == -8)
                     break;
-                if (diff == -16 && selected->brdPos / 8 == 6 && !storedPieces.contains(p_brdPos + 8))
+                if (diff == -16 && selected->brdPos / 8 == 6 && !pieceAt(p_brdPos + 8))
                 {
                     state.enPassant = p_brdPos + 8;
                     keepEnpassant = true;
@@ -619,7 +623,7 @@ bool Pieces::tryMove(int32_t p_brdPos)
             {
                 if (diff == 8)
                     break;
-                if (diff == 16 && selected->brdPos / 8 == 1 && !storedPieces.contains(p_brdPos - 8))
+                if (diff == 16 && selected->brdPos / 8 == 1 && !pieceAt(p_brdPos - 8))
                 {
                     state.enPassant = p_brdPos - 8;
                     keepEnpassant = true;
@@ -661,7 +665,7 @@ bool Pieces::tryMove(int32_t p_brdPos)
             return false;
         for (int i = selected->brdPos + increment; i != p_brdPos; i += increment)
         {
-            if (storedPieces.contains(i))
+            if (pieceAt(i))
                 return false;
         }
         break;
@@ -677,7 +681,7 @@ bool Pieces::tryMove(int32_t p_brdPos)
             return false;
         for (int i = selected->brdPos + increment; i != p_brdPos; i += increment)
         {
-            if (storedPieces.contains(i))
+            if (pieceAt(i))
                 return false;
         }
         break;
@@ -697,7 +701,7 @@ bool Pieces::tryMove(int32_t p_brdPos)
             return false;
         for (int i = selected->brdPos + increment; i != p_brdPos; i += increment)
         {
-            if (storedPieces.contains(i))
+            if (pieceAt(i))
                 return false;
         }
         break;
@@ -732,7 +736,7 @@ bool Pieces::tryMove(int32_t p_brdPos)
             int j = 0;
             for (int i = selected->brdPos + dir; i != rookPos; i += dir)
             {
-                if (storedPieces.contains(i) || (j < 2 && isThreatened(i, state.activeMove)))
+                if (pieceAt(i) || (j < 2 && isThreatened(i, state.activeMove)))
                     return false;
                 j++;
             }

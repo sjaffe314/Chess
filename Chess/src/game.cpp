@@ -78,6 +78,9 @@ void Game::checkEvents()
             gui.resetClocks();
             board.clearAllHighlights();
             break;
+        case Quit:
+            gameRunning = false;
+            break;
         }
     }
     while (myEvent = pieces.pollEvent())

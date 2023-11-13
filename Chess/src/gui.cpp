@@ -9,7 +9,23 @@ GUI::GUI() : window(RenderWindow::get())
 
 void GUI::initializeEntities()
 {
-	buttons.emplace_back("New Game", Vector2i{window.getWidth() / 2 - 8 * window.getScale(), window.getHeight() / 2 - 3 * window.getScale()}, Vector2i{window.getScale() * 5 / 2, window.getScale() / 2}, NewGame);
+	buttons.reserve(6);
+	
+	Vector2i buttonDims = { window.getScale() * 5 / 2, window.getScale() / 2 };
+	Vector2i buttonPos = { (window.getWidth() - 26 * window.getScale() / 3) / 4 - buttonDims.x / 2, window.getHeight() / 2 - 4 * window.getScale() };
+	//buttonPos.y = 100;
+	buttons.emplace_back("New Game", buttonPos, buttonDims, NewGame);
+	buttonPos.y += buttonDims.y * 3 / 2;
+	buttons.emplace_back("Quit", buttonPos, buttonDims, Quit);
+	buttonPos.y += buttonDims.y * 3 / 2;
+	buttons.emplace_back("Toggle Timers", buttonPos, buttonDims, ToggleTimers);
+	buttonPos.y += buttonDims.y * 3 / 2;
+	buttons.emplace_back("Reset Timers", buttonPos, buttonDims, ResetTimers);
+	buttonPos.y += buttonDims.y * 3 / 2;
+	buttons.emplace_back("+1 Minute", buttonPos, buttonDims, AddTime);
+	buttonPos.y += buttonDims.y * 3 / 2;
+	buttons.emplace_back("-1 Minute", buttonPos, buttonDims, RemoveTime);
+
 
 	Vector2i timerDims = { window.getScale() * 2, window.getScale() / 2 };
 	Vector2i timerPos = Vector2i{ window.getWidth() / 2 + 13 * window.getScale() / 3, (window.getHeight() - 9 * window.getScale()) / 2 } - timerDims;
@@ -39,12 +55,12 @@ void GUI::update(Vector2i p_mousePos)
 		button.isHovered(p_mousePos);
 	}
 	
-	if (whiteTimer.isActive())
+	if (whiteTimer.isRunning())
 	{
 		whiteTimer.updateTime();
 		if (whiteTimer.timeHasRunOut()) queueEvent(WhiteTimeout);
 	}
-	if (blackTimer.isActive())
+	if (blackTimer.isRunning())
 	{
 		blackTimer.updateTime();
 		if (blackTimer.timeHasRunOut()) queueEvent(BlackTimeout);
@@ -68,20 +84,57 @@ void GUI::onMouseUp(Vector2i p_mousePos)
 	{
 		if (button.unpress(p_mousePos))
 		{
-			queueEvent(button.getEventCode());
+			switch (button.getEventCode())
+			{
+			case ToggleTimers:
+				if (whiteTimer.isRunning() || blackTimer.isRunning())
+				{
+					whiteTimer.stop();
+					blackTimer.stop();
+				}
+				else
+				{
+					if (whiteTimer.isActive()) whiteTimer.start();
+					if (blackTimer.isActive()) blackTimer.start();
+				}
+				break;
+			case ResetTimers:
+				whiteTimer.set(clockTime);
+				blackTimer.set(clockTime);
+				break;
+			case AddTime:
+				whiteTimer.add(60);
+				blackTimer.add(60);
+				clockTime += 60;
+				break;
+			case RemoveTime:
+				whiteTimer.add(-60);
+				blackTimer.add(-60);
+				clockTime -= 60;
+				break;
+			default:
+				queueEvent(button.getEventCode());
+			}
 		}
 	}
 }
 
 void GUI::resetClocks()
 {
-	whiteTimer.reset(clockTime);
-	blackTimer.reset(clockTime);
-	whiteTimer.activate();
+	whiteTimer.set(clockTime);
+	blackTimer.set(clockTime);
 }
 
 void GUI::toggleTurn()
 {
-	whiteTimer.toggleActive();
-	blackTimer.toggleActive();
+	if (whiteTimer.isRunning() || blackTimer.isRunning())
+	{
+		whiteTimer.toggleRunning();
+		blackTimer.toggleRunning();
+	}
+	else
+	{
+		whiteTimer.toggleActive();
+		blackTimer.toggleActive();
+	}
 }

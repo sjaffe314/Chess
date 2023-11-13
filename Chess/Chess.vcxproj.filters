@@ -102,10 +102,8 @@
     <Font Include="res\dev\MontserratBold.ttf">
       <Filter>Resource Files</Filter>
     </Font>
-    <Font Include="res\dev\jetbrains-mono\JetBrainsMono-Bold.ttf" />
-    <Font Include="res\dev\jetbrains-mono\JetBrainsMono-Regular.ttf" />
-    <Font Include="res\dev\NotoMono-Regular.ttf" />
-    <Font Include="res\dev\Alatsi-Regular.ttf" />
-    <Font Include="res\dev\UbuntuMono-B.ttf" />
+    <Font Include="res\dev\UbuntuMono-B.ttf">
+      <Filter>Resource Files</Filter>
+    </Font>
   </ItemGroup>
 </Project>

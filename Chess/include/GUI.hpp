@@ -15,7 +15,12 @@ enum EventCodes : uint8_t
 {
 	NewGame = 1,
 	WhiteTimeout = 2,
-	BlackTimeout = 3
+	BlackTimeout = 3,
+	Quit = 4,
+	AddTime = 5,
+	RemoveTime = 6,
+	ResetTimers = 7,
+	ToggleTimers = 8
 };
 
 class GUI : public Subsystem
@@ -36,7 +41,7 @@ private:
 	RenderWindow& window;
 
 	bool checkMate = false;
-	int clockTime = 600;
+	int clockTime = 20;
 
 	uint32_t gray = 0xa6a5a2ff;
 	uint32_t green = 0x07a822ff;

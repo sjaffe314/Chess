@@ -24,16 +24,23 @@ void Timer::loadTime()
 	setForeground(window.loadText(Timer::csToClock(time).c_str(), (active) ? Timer::darkColor : Timer::lightColor));
 }
 
-void Timer::reset(uint32_t duration)
+void Timer::start()
 {
-	time = duration * 1000;
-	deactivate();
+	running = true;
+	active = true;
+	lastUpdate = SDL_GetTicks();
+	setBackgroundFrame(1);
+	loadTime();
+}
+
+void Timer::stop()
+{
+	running = false;
 }
 
 void Timer::activate()
 {
 	active = true;
-	lastUpdate = SDL_GetTicks();
 	setBackgroundFrame(1);
 	loadTime();
 }
@@ -45,6 +52,16 @@ void Timer::deactivate()
 	loadTime();
 }
 
+void Timer::toggleRunning()
+{
+	if (!running) start();
+	else 
+	{
+		stop();
+		deactivate();
+	}
+}
+
 void Timer::toggleActive()
 {
 	if (active) deactivate();
@@ -53,10 +70,14 @@ void Timer::toggleActive()
 
 void Timer::updateTime()
 {
-	uint32_t newTime = time - (SDL_GetTicks() - lastUpdate);
-	if (newTime <= 0) time = 0;
+	uint32_t timeEllapsed = SDL_GetTicks() - lastUpdate;
+	uint32_t newTime = time - timeEllapsed;
+	if (timeEllapsed >= time) 
+	{
+		newTime = 0;
+	}
 	bool needRerender = newTime < 20000 || newTime / 1000 % 10 == time / 1000 % 10;
-	if (time != 0) time = newTime;
+	time = newTime;
 	if (needRerender) loadTime();
 	lastUpdate = SDL_GetTicks();
 }

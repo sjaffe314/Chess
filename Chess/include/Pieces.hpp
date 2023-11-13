@@ -11,6 +11,7 @@
 #include <sstream>
 #include <optional>
 
+#include "Subsystem.hpp"
 #include "RenderWindow.hpp"
 #include "Board.hpp"
 #include "Piece.hpp"
@@ -24,19 +25,26 @@ struct GameState
     uint32_t halfMoves = 0, fullMoves = 1;
 };
 
-class Pieces
+enum PiecesEventCodes : uint8_t
+{
+    ChangedTurn = 1,
+    QueenPromotionPrompt = 2,
+    WhiteWin = 3,
+    BlackWin = 4,
+    Stalemate = 5
+};
+
+class Pieces : public Subsystem
 {
 public:
     Pieces(Board &p_board);
-    void setBoard(std::string p_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    void newGame(std::string p_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     void onClick(int32_t p_brdpos);
     void onRelease(int32_t p_brdpos);
     void draw();
     void updateSelectedPiecePos(Vector2i p_mousePos);
 
     void updateAllPiecePos();
-
-    bool checkMate = false;
 
 private:
     bool selectPieceAtSquare(int32_t p_brdPos);
@@ -59,7 +67,6 @@ private:
     std::optional<PieceAndBoard> selected;
     bool held = false;
     bool unselectIfDropped = false;
-    bool inCheck = false;
     int32_t kingPositions[2] = {4, 60};
 
     RenderWindow &window;

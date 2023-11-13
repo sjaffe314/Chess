@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\board.cpp" />
+    <ClCompile Include="src\button.cpp" />
     <ClCompile Include="src\entity.cpp" />
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="src\gui.cpp" />
@@ -148,10 +149,12 @@
     <ClCompile Include="src\pieces.cpp" />
     <ClCompile Include="src\renderwindow.cpp" />
     <ClCompile Include="src\settings.cpp" />
+    <ClCompile Include="src\timer.cpp" />
     <ClCompile Include="src\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Board.hpp" />
+    <ClInclude Include="include\Button.hpp" />
     <ClInclude Include="include\Entity.hpp" />
     <ClInclude Include="include\Game.hpp" />
     <ClInclude Include="include\GUI.hpp" />
@@ -160,13 +163,20 @@
     <ClInclude Include="include\Pieces.hpp" />
     <ClInclude Include="include\RenderWindow.hpp" />
     <ClInclude Include="include\Settings.hpp" />
+    <ClInclude Include="include\Subsystem.hpp" />
+    <ClInclude Include="include\Timer.hpp" />
     <ClInclude Include="include\Utils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\gfx\SpriteSheet.png" />
   </ItemGroup>
   <ItemGroup>
+    <Font Include="res\dev\Alatsi-Regular.ttf" />
+    <Font Include="res\dev\jetbrains-mono\JetBrainsMono-Bold.ttf" />
+    <Font Include="res\dev\jetbrains-mono\JetBrainsMono-Regular.ttf" />
     <Font Include="res\dev\MontserratBold.ttf" />
+    <Font Include="res\dev\NotoMono-Regular.ttf" />
+    <Font Include="res\dev\UbuntuMono-B.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -9,8 +9,10 @@ void Board::updateBoardTexture()
     squareSize = window.getHeight() / 11;
     boardStart = { (window.getWidth() >> 1) - (squareSize << 2), (window.getHeight() >> 1) - (squareSize << 2) };
     boardEnd = boardStart + (squareSize * 7);
+    margins = boardStart - (squareSize / 3);
 
-    board.updateVals(boardStart - (squareSize / 3), window.createBoardTexture());
+    board.setPos(margins);
+    board.setTexture(window.createBoardTexture());
 }
 
 void Board::draw()
@@ -56,4 +58,12 @@ void Board::updatePreviousHighlights(int32_t p_from, int32_t p_to)
     highlightPositions[1] = p_from;
     highlightPositions[2] = p_to;
     highlightPositions[0] = -1;
+}
+
+void Board::clearAllHighlights()
+{
+    highlightPositions[0] = -1;
+    highlightPositions[1] = -1;
+    highlightPositions[2] = -1;
+    clearLegalMoves();
 }

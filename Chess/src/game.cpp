@@ -28,10 +28,9 @@ void Game::run()
         window.updateMousePos(mousePos);
         hovered = board.posToBoard(mousePos);
         pieces.updateSelectedPiecePos(mousePos);
+        gui.update(mousePos);
 
         checkEvents();
-
-        gui.setCheckMateStatus(pieces.checkMate);
 
         if (change)
             draw();
@@ -49,9 +48,11 @@ void Game::checkEvents()
         switch (event.type)
         {
         case SDL_MOUSEBUTTONDOWN:
+            gui.onMouseDown(mousePos);
             pieces.onClick(hovered);
             break;
         case SDL_MOUSEBUTTONUP:
+            gui.onMouseUp(mousePos);
             pieces.onRelease(hovered);
             break;
 
@@ -61,13 +62,38 @@ void Game::checkEvents()
             case SDLK_ESCAPE:
                 gameRunning = false;
                 break;
-            case SDLK_n: // pressing "n" resets the board
-                pieces.setBoard();
-                break;
             }
             break;
         case SDL_QUIT:
             gameRunning = false;
+            break;
+        }
+    }
+    while (myEvent = gui.pollEvent())
+    {
+        switch (myEvent)
+        {
+        case NewGame:
+            pieces.newGame();
+            gui.resetClocks();
+            board.clearAllHighlights();
+            break;
+        }
+    }
+    while (myEvent = pieces.pollEvent())
+    {
+        switch (myEvent)
+        {
+        case ChangedTurn:
+            gui.toggleTurn();
+            break;
+        case WhiteWin:
+            gui.showCheckmate();
+            break;
+        case BlackWin:
+            gui.showCheckmate();
+            break;
+        case Stalemate:
             break;
         }
     }

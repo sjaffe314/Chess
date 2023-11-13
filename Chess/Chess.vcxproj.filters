@@ -45,6 +45,12 @@
     <ClCompile Include="src\gui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\button.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Entity.hpp">
@@ -77,6 +83,15 @@
     <ClInclude Include="include\GUI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Button.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Timer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Subsystem.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\gfx\SpriteSheet.png">
@@ -87,5 +102,10 @@
     <Font Include="res\dev\MontserratBold.ttf">
       <Filter>Resource Files</Filter>
     </Font>
+    <Font Include="res\dev\jetbrains-mono\JetBrainsMono-Bold.ttf" />
+    <Font Include="res\dev\jetbrains-mono\JetBrainsMono-Regular.ttf" />
+    <Font Include="res\dev\NotoMono-Regular.ttf" />
+    <Font Include="res\dev\Alatsi-Regular.ttf" />
+    <Font Include="res\dev\UbuntuMono-B.ttf" />
   </ItemGroup>
 </Project>

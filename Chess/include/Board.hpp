@@ -26,9 +26,10 @@ public:
     void updateHome(int32_t p_brdPos) { highlightPositions[0] = (p_brdPos != highlightPositions[1] && p_brdPos != highlightPositions[2]) ? p_brdPos : -1; }
     void clearHome() { highlightPositions[0] = -1; }
     void updatePreviousHighlights(int32_t p_from, int32_t p_to);
+    void clearAllHighlights();
 
     int getSquareSize() { return squareSize; }
-
+    Vector2i getMargins() { return margins; }
 
 private:
     RenderWindow &window;
@@ -41,7 +42,7 @@ private:
     int squareSize = 0;
 
     Entity board;
-    Vector2i boardStart, boardEnd;  // board end is top left corner of bottom right square (position for drawing a piece in that square)
+    Vector2i boardStart, boardEnd, margins;  // board end is top left corner of bottom right square (position for drawing a piece in that square)
 
     //std::optional<Vector2i> legalMoves[27];  // 27 is max moves a single piece can have
     //std::optional<Vector2i> highlights[3];

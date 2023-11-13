@@ -10,14 +10,13 @@
 Pieces::Pieces(Board &p_board)
     : window(RenderWindow::get()), board(p_board)
 {
-    setBoard();
+    newGame();
 }
 
-void Pieces::setBoard(std::string p_fen)
+void Pieces::newGame(std::string p_fen)
 {
     storedPieces.clear();
     selected.reset();
-    checkMate = false;
     held = false;
     unselectIfDropped = false;
     
@@ -223,6 +222,7 @@ void Pieces::makeMove(int32_t p_brdPos)
     selected.reset();
 
     calculateAllLegalMoves(state.activeMove);
+    queueEvent(ChangedTurn);
 }
 
 bool Pieces::pieceAt(int32_t p_brdPos)
@@ -477,9 +477,9 @@ void Pieces::calculateAllLegalMoves(bool p_color)
     if (storedLegalMoves.empty())
     {
         if (inCheck)
-            checkMate = true;
-        // else
-        //     stalemate
+            queueEvent((p_color) ? WhiteWin : BlackWin);
+        else
+            queueEvent(Stalemate);
     }
 }
 

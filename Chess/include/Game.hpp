@@ -29,6 +29,7 @@ private:
     bool gameRunning = true;
     bool change = true;
     SDL_Event event;
+    uint8_t myEvent;
 
     Board board;
     Pieces pieces;

@@ -9,6 +9,7 @@ class Entity
 public:
     //initializers
     Entity(Vector2i p_pos, SDL_Texture *p_tex, int frames = 1) : pos(p_pos) { setTexture(p_tex, frames); };
+    Entity(Vector2i p_pos, SDL_Texture* p_tex, bool center, int frames = 1) { setTexture(p_tex, frames); pos = p_pos - Vector2i{getWidth(), getHeight()} / 2; };
     Entity(SDL_Texture* p_tex, int frames = 1) { setTexture(p_tex, frames); };
     Entity(Vector2i p_pos, Vector2i p_dims);
     Entity(){};

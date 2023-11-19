@@ -73,13 +73,20 @@ void Game::checkEvents()
     {
         switch (myEvent)
         {
-        case NewGame:
+        case GUIEvents::NewGame:
             pieces.newGame();
+            gui.clearTexts();
             gui.resetClocks();
             board.clearAllHighlights();
             break;
-        case Quit:
+        case GUIEvents::Quit:
             gameRunning = false;
+            break;
+        case GUIEvents::StopGame:
+            pieces.allowNoMoves();
+            break;
+        case GUIEvents::ContinueGame:
+            pieces.calculateCurrentLegalMoves();
             break;
         }
     }
@@ -87,16 +94,20 @@ void Game::checkEvents()
     {
         switch (myEvent)
         {
-        case ChangedTurn:
+        case PiecesEvents::ChangedTurn:
             gui.toggleTurn();
             break;
-        case WhiteWin:
-            gui.showCheckmate();
+        case PiecesEvents::WhiteWin:
+            gui.show(TextIndicies::Checkmate);
+            gui.show(TextIndicies::WhiteWins);
             break;
-        case BlackWin:
-            gui.showCheckmate();
+        case PiecesEvents::BlackWin:
+            gui.show(TextIndicies::Checkmate);
+            gui.show(TextIndicies::BlackWins);
             break;
-        case Stalemate:
+        case PiecesEvents::Stalemate:
+            gui.show(TextIndicies::Stalemate);
+            gui.show(TextIndicies::Tied);
             break;
         }
     }

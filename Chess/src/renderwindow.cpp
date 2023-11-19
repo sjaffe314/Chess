@@ -175,6 +175,21 @@ SDL_Texture* RenderWindow::createTwoColoredBox(Vector2i dims, int r, uint32_t pr
     return text;
 }
 
+SDL_Texture* RenderWindow::createThreeColoredBox(Vector2i dims, int r, uint32_t primaryColor, uint32_t secondaryColor, uint32_t tertiaryColor)
+{
+    SDL_Surface* surf = SDL_CreateRGBSurface(0, dims.x * 3, dims.y, 32, 0xff000000, 0x00ff0000, 0x0000ff00, 0x000000ff);
+    SDL_Rect rect = { 0, 0, dims.x, dims.y };
+    fillRoundedBox(surf, rect, r, primaryColor);
+    rect.x += rect.w;
+    fillRoundedBox(surf, rect, r, secondaryColor);
+    rect.x += rect.w;
+    fillRoundedBox(surf, rect, r, tertiaryColor);
+
+    SDL_Texture* text = SDL_CreateTextureFromSurface(renderer, surf);
+    SDL_FreeSurface(surf);
+    return text;
+}
+
 SDL_Texture* RenderWindow::createTexture(Vector2i p_dims)
 {
     SDL_Texture* text = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, p_dims.x, p_dims.y);

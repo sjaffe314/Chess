@@ -25,14 +25,19 @@ struct GameState
     uint32_t halfMoves = 0, fullMoves = 1;
 };
 
-enum PiecesEventCodes : uint8_t
+namespace PiecesEvents
 {
-    ChangedTurn = 1,
-    QueenPromotionPrompt = 2,
-    WhiteWin = 3,
-    BlackWin = 4,
-    Stalemate = 5
-};
+    enum PiecesEventCodes : uint8_t
+    {
+        None,
+        ChangedTurn,
+        QueenPromotionPrompt,
+        WhiteWin,
+        BlackWin,
+        Stalemate
+    };
+}
+
 
 class Pieces : public Subsystem
 {
@@ -45,7 +50,8 @@ public:
     void updateSelectedPiecePos(Vector2i p_mousePos);
 
     void updateAllPiecePos();
-
+    void allowNoMoves() { storedLegalMoves.clear(); board.clearLegalMoves(); }
+    void calculateCurrentLegalMoves() { calculateAllLegalMoves(state.activeMove); }
 private:
     bool selectPieceAtSquare(int32_t p_brdPos);
     bool placeSelectedPiece(int32_t p_brdPos);

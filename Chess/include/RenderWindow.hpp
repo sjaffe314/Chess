@@ -34,6 +34,7 @@ public:
     SDL_Texture* createButtonTexture(Vector2i dims, int r, uint32_t primaryColor, uint32_t secondaryColor, const char* text, uint32_t textColor = 0xffffffff);
     SDL_Texture* createButtonTexture(Vector2i dims, int r, uint32_t primaryColor, uint32_t secondaryColor, uint32_t pieceType);
     SDL_Texture* createTwoColoredBox(Vector2i dims, int r, uint32_t primaryColor, uint32_t secondaryColor);
+    SDL_Texture* createThreeColoredBox(Vector2i dims, int r, uint32_t primaryColor, uint32_t secondaryColor, uint32_t tertiaryColor);
 
     //creating 
     SDL_Texture* createTexture(Vector2i p_dims);

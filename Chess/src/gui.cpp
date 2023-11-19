@@ -9,32 +9,42 @@ GUI::GUI() : window(RenderWindow::get())
 
 void GUI::initializeEntities()
 {
-	buttons.reserve(6);
+	Vector2i dims, pos;
 	
-	Vector2i buttonDims = { window.getScale() * 5 / 2, window.getScale() / 2 };
-	Vector2i buttonPos = { (window.getWidth() - 26 * window.getScale() / 3) / 4 - buttonDims.x / 2, window.getHeight() / 2 - 4 * window.getScale() };
-	//buttonPos.y = 100;
-	buttons.emplace_back("New Game", buttonPos, buttonDims, NewGame);
-	buttonPos.y += buttonDims.y * 3 / 2;
-	buttons.emplace_back("Quit", buttonPos, buttonDims, Quit);
-	buttonPos.y += buttonDims.y * 3 / 2;
-	buttons.emplace_back("Toggle Timers", buttonPos, buttonDims, ToggleTimers);
-	buttonPos.y += buttonDims.y * 3 / 2;
-	buttons.emplace_back("Reset Timers", buttonPos, buttonDims, ResetTimers);
-	buttonPos.y += buttonDims.y * 3 / 2;
-	buttons.emplace_back("+1 Minute", buttonPos, buttonDims, AddTime);
-	buttonPos.y += buttonDims.y * 3 / 2;
-	buttons.emplace_back("-1 Minute", buttonPos, buttonDims, RemoveTime);
+	buttons.reserve(7);
+	
+	dims = { window.getScale() * 5 / 2, window.getScale() / 2 };
+	pos = { (window.getWidth() - 26 * window.getScale() / 3) / 4 - dims.x / 2, window.getHeight() / 2 - 4 * window.getScale() };
+	buttons.emplace_back("New Game", pos, dims, GUIEvents::NewGame);
+	pos.y += dims.y * 3 / 2;
+	buttons.emplace_back("Quit", pos, dims, GUIEvents::Quit);
+	pos.y += dims.y * 3 / 2;
+	buttons.emplace_back("Toggle Timers", pos, dims, GUIEvents::ToggleTimers);
+	pos.y += dims.y * 3 / 2;
+	buttons.emplace_back("Start/Stop", pos, dims, GUIEvents::StartStopTime);
+	pos.y += dims.y * 3 / 2;
+	buttons.emplace_back("Reset Timers", pos, dims, GUIEvents::ResetTimers);
+	pos.y += dims.y * 3 / 2;
+	buttons.emplace_back("+1 Minute", pos, dims, GUIEvents::AddTime);
+	pos.y += dims.y * 3 / 2;
+	buttons.emplace_back("-1 Minute", pos, dims, GUIEvents::RemoveTime);
 
+	dims = { window.getScale() * 2, window.getScale() / 2 };
+	pos = Vector2i{ window.getWidth() / 2 + 13 * window.getScale() / 3, (window.getHeight() - 9 * window.getScale()) / 2 } - dims;
+	blackTimer.init(pos, dims, clockTime);
+	pos.y += 19 * window.getScale() / 2;
+	whiteTimer.init(pos, dims, clockTime);
 
-	Vector2i timerDims = { window.getScale() * 2, window.getScale() / 2 };
-	Vector2i timerPos = Vector2i{ window.getWidth() / 2 + 13 * window.getScale() / 3, (window.getHeight() - 9 * window.getScale()) / 2 } - timerDims;
-	blackTimer.init(timerPos, timerDims, clockTime);
-	timerPos.y += 19 * window.getScale() / 2;
-	whiteTimer.init(timerPos, timerDims, clockTime);
+	texts.reserve(6);
+	pos = { window.getWidth() / 2, window.getHeight() / 2 - window.getScale() / 4 };
+	texts.emplace_back(pos, window.loadText("Checkmate", green), true);
+	texts.emplace_back(pos, window.loadText("Stalemate", green), true);
+	texts.emplace_back(pos, window.loadText("Time Ran Out", green), true);
+	pos.y += window.getScale() / 2;
+	texts.emplace_back(pos, window.loadText("White Wins", green), true);
+	texts.emplace_back(pos, window.loadText("Black Wins", green), true);
+	texts.emplace_back(pos, window.loadText("Tied", green), true);
 
-	text.setTexture(window.loadText("Checkmate", green));
-	text.setPos({ (window.getWidth() - text.getWidth()) / 2, 30 });
 }
 
 void GUI::draw()
@@ -45,7 +55,10 @@ void GUI::draw()
 	}
 	window.render(whiteTimer);
 	window.render(blackTimer);
-	if (checkMate) window.render(text);
+
+	for (uint8_t ind : textsToDisplay) {
+		window.render(texts[ind]);
+	}
 }
 
 void GUI::update(Vector2i p_mousePos)
@@ -55,15 +68,25 @@ void GUI::update(Vector2i p_mousePos)
 		button.isHovered(p_mousePos);
 	}
 	
-	if (whiteTimer.isRunning())
+	if (whiteTimer.isRunning() && whiteTimer.isActive())
 	{
 		whiteTimer.updateTime();
-		if (whiteTimer.timeHasRunOut()) queueEvent(WhiteTimeout);
+		if (whiteTimer.timeHasRunOut()) {
+			blackTimer.stop();
+			show(TextIndicies::BlackWins);
+			show(TextIndicies::TimeRanOut);
+			queueEvent(GUIEvents::StopGame);
+		}
 	}
-	if (blackTimer.isRunning())
+	if (blackTimer.isRunning() && blackTimer.isActive())
 	{
 		blackTimer.updateTime();
-		if (blackTimer.timeHasRunOut()) queueEvent(BlackTimeout);
+		if (blackTimer.timeHasRunOut()) {
+			whiteTimer.stop();
+			show(TextIndicies::WhiteWins);
+			show(TextIndicies::TimeRanOut);
+			queueEvent(GUIEvents::StopGame);
+		}
 	}
 }
 
@@ -86,31 +109,31 @@ void GUI::onMouseUp(Vector2i p_mousePos)
 		{
 			switch (button.getEventCode())
 			{
-			case ToggleTimers:
-				if (whiteTimer.isRunning() || blackTimer.isRunning())
-				{
-					whiteTimer.stop();
-					blackTimer.stop();
-				}
-				else
-				{
-					if (whiteTimer.isActive()) whiteTimer.start();
-					if (blackTimer.isActive()) blackTimer.start();
-				}
+			case GUIEvents::ToggleTimers:
+				whiteTimer.toggleInUse();
+				blackTimer.toggleInUse();
+				textsToDisplay.clear();
+				queueEvent(GUIEvents::ContinueGame);
 				break;
-			case ResetTimers:
+			case GUIEvents::ResetTimers:
 				whiteTimer.set(clockTime);
 				blackTimer.set(clockTime);
+				textsToDisplay.clear();
+				queueEvent(GUIEvents::ContinueGame);
 				break;
-			case AddTime:
+			case GUIEvents::AddTime:
 				whiteTimer.add(60);
 				blackTimer.add(60);
 				clockTime += 60;
 				break;
-			case RemoveTime:
-				whiteTimer.add(-60);
-				blackTimer.add(-60);
+			case GUIEvents::RemoveTime:
+				whiteTimer.remove(60);
+				blackTimer.remove(60);
 				clockTime -= 60;
+				break;
+			case GUIEvents::StartStopTime:
+				whiteTimer.toggleRunning();
+				blackTimer.toggleRunning();
 				break;
 			default:
 				queueEvent(button.getEventCode());
@@ -127,14 +150,6 @@ void GUI::resetClocks()
 
 void GUI::toggleTurn()
 {
-	if (whiteTimer.isRunning() || blackTimer.isRunning())
-	{
-		whiteTimer.toggleRunning();
-		blackTimer.toggleRunning();
-	}
-	else
-	{
-		whiteTimer.toggleActive();
-		blackTimer.toggleActive();
-	}
+	whiteTimer.toggleActive();
+	blackTimer.toggleActive();
 }

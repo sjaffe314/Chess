@@ -222,7 +222,7 @@ void Pieces::makeMove(int32_t p_brdPos)
     selected.reset();
 
     calculateAllLegalMoves(state.activeMove);
-    queueEvent(ChangedTurn);
+    queueEvent(PiecesEvents::ChangedTurn);
 }
 
 bool Pieces::pieceAt(int32_t p_brdPos)
@@ -477,9 +477,9 @@ void Pieces::calculateAllLegalMoves(bool p_color)
     if (storedLegalMoves.empty())
     {
         if (inCheck)
-            queueEvent((p_color) ? WhiteWin : BlackWin);
+            queueEvent((p_color) ? PiecesEvents::BlackWin : PiecesEvents::WhiteWin);
         else
-            queueEvent(Stalemate);
+            queueEvent(PiecesEvents::Stalemate);
     }
 }
 
